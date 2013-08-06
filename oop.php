@@ -16,8 +16,8 @@
 
 
      $kiaOptima = new cars (4, 'tan', 2004, 'Kia Optima');
-     $fordExplorer = new cars;
-     
+    $fordExplorer = new cars (2, 'red', 2013, 'Ford Explorer');
+    
 print_r($kiaOptima);
 print_r($fordExplorer);
 
