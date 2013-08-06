@@ -14,7 +14,7 @@
           } 
 
 	public function st(){
-	echo	 $this->size . '<br/>' . $this->color . '<br/>' . $this->year . '<br/>' . $this->name;
+	echo	 $this->name . '<br/>' . $this->year . '<br/>' . $this->size . '<br/>' . $this->color . '<br/>' . '<br/>';
 	}
 
 
@@ -25,7 +25,7 @@
      $fordExplorer = new cars (2, 'red', 2013, 'Ford Explorer');
 	     
 	 $kiaOptima->st();
-     $fordExplorer->st();
+         $fordExplorer->st();
 
 //	echo $kiaOptima->name . '<br/>';
 //	echo $kiaOptima->size;
