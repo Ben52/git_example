@@ -25,6 +25,7 @@
      $fordExplorer = new cars (2, 'red', 2013, 'Ford Explorer');
 	     
 	 $kiaOptima->st();
+     $fordExplorer->st();
 
 //	echo $kiaOptima->name . '<br/>';
 //	echo $kiaOptima->size;
