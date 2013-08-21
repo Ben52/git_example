@@ -4,8 +4,18 @@
   foreach($a as $b){
   echo $b . '<br>';
   }
+  
+ function sqr($num){
+ $numsqr = $num * $num;
+ echo $numsqr;
+ }
 
+$a = 9;
 
+$num = $a;
+ 
+
+ 
 
 
 
