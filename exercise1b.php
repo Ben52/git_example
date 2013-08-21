@@ -9,6 +9,8 @@
   $obj->credit(200, 'cash deposit');
   $obj->debit(500, 'Target');
   $obj->debit(100, 'Sears');
+  $obj->credit(600, 'refund');
+  $obj->debit(1200, 'Kmart');
 
 
  // $transactions = $obj->debit(100);
@@ -32,15 +34,20 @@
       $transaction['amount'] = $amount;
       $transaction['source'] = $source;
       $this->transactions[] = $transaction; 
-    //  $this->current_balance = $this->current_balance - $amount;
-        $this->transactions[]['debit'] = $amount;
-	//$this->transactions[]['source'] = $source;
+      $this->current_balance = $this->current_balance - $amount;
+       // $this->transactions[]['debit'] = $amount;
+	   //$this->transactions[]['source'] = $source;
     }
 
     public function credit($amount, $source){
-    //  $this->current_balance = $this->current_balance + $amount;
-        $this->transactions[]['credit'] = $amount;
-	//$this->transactions[]['source'] = $source;
+          $transaction = array();
+          $transaction['type'] = 'credit';
+          $transaction['amount'] = $amount;
+          $transaction['source'] = $source;
+          $this->transactions[] = $transaction;
+        $this->current_balance = $this->current_balance + $amount;
+       // $this->transactions[]['credit'] = $amount;
+	   //$this->transactions[]['source'] = $source;
     }
 
    public function process(){
