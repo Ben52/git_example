@@ -6,6 +6,8 @@
   $obj->debit(100);
   $obj->credit(200);
   $obj->debit(500);
+  $obj->credit(20.20);
+  $obj->debit(720.25);
   print_r($obj);
 
   class account{
