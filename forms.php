@@ -31,7 +31,9 @@ $obj = new program();
 	
 	class homepage extends page{
 		public function get(){
-			echo 'Welcome to the bank <br> <a href="forms.php?class=login">Login</a> <br> <a href="forms.php?class=signup">Signup</a>';
+			echo '<body><h3>Welcome to the bank!</h3></body> <br>
+				 <a href="forms.php?class=login">Login</a> <br> 
+					<a href="forms.php?class=signup">Signup</a>';
 			
 		}
 	}
@@ -50,6 +52,10 @@ $obj = new program();
     		 					<INPUT type="submit" value="Send"> <INPUT type="reset">
     		 				</P>
 		 	 			</FORM>';
+		public function post(){
+			echo 'Thank you for logging in. ' . "$_POST[username]" . 'Have a wonderful day!<br><br><br>';
+			echo '<a href="forms.php">Click here to retun to the Homepage</a>';
+		}
 	}
 	
 	class signup extends page{
@@ -62,8 +68,8 @@ $obj = new program();
 					<INPUT type="text" name="firstname" id="firstname"><BR>
 					<LABEL for="lastname">Last name: </LABEL>
 					<INPUT type="text" name="lastname" id="lastname"><BR>
-					<LABEL for="email">email: </LABEL>
-					<INPUT type="text" name="email" id="email"><BR>
+					<LABEL for="username">Choose a username: </LABEL>
+					<INPUT type="text" name="username" id="username"><BR>
 					<INPUT type="submit" value="Send"> <INPUT type="reset">
 				</P>
 			</FORM>';
