@@ -53,7 +53,7 @@ $obj = new program();
     		 				</P>
 		 	 			</FORM>';
 		public function post(){
-			echo 'Thank you for logging in. ' . "$_POST[username]" . 'Have a wonderful day!<br><br><br>';
+			echo 'Thank you for logging in, ' . "$_POST[username]" . "." . ' Have a wonderful day!<br><br><br>';
 			echo '<a href="forms.php">Click here to retun to the Homepage</a>';
 		}
 	}
@@ -62,17 +62,22 @@ $obj = new program();
 		public function get(){
 			echo $this->form;
 		}
+
 		public $form = '<FORM action="forms.php?class=signup" method="post">
-				<P>
-					<LABEL for="firstname">First name: </LABEL>
-					<INPUT type="text" name="firstname" id="firstname"><BR>
-					<LABEL for="lastname">Last name: </LABEL>
-					<INPUT type="text" name="lastname" id="lastname"><BR>
-					<LABEL for="username">Choose a username: </LABEL>
-					<INPUT type="text" name="username" id="username"><BR>
-					<INPUT type="submit" value="Send"> <INPUT type="reset">
-				</P>
-			</FORM>';
+						<P>
+							<LABEL for="firstname">First name: </LABEL>
+								<INPUT type="text" name="firstname" id="firstname"><BR>
+							<LABEL for="lastname">Last name: </LABEL>
+								<INPUT type="text" name="lastname" id="lastname"><BR>
+							<LABEL for="username">Choose a username: </LABEL>
+								<INPUT type="text" name="username" id="username"><BR>
+							<LABEL for="password">Choose a password: </LABEL>
+								<INPUT type="password" name="password" id="password"><BR>
+							<LABEL for="passwordconfirmation">Confirm your password: </LABEL>
+								<INPUT type="password" name="passwordconfirmation" id="passwordconfirmation"><BR>
+							<INPUT type="submit" value="Send"> <INPUT type="reset">
+						</P>
+						</FORM>';
 	}
 
 
