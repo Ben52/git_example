@@ -16,7 +16,15 @@ $obj = new program();
 			if($_SERVER['REQUEST_METHOD'] == 'GET'){
 				$this->get();
 			}else{
-				$this->post();
+				try {
+				     $this->post();
+				} catch (Exception $e) {
+					print_r($e);
+					echo 'Caught exception: ' . $e->getMessage() . "<br>" . "\n";
+					 
+					
+				} 
+				
 			}
 		}
 		public function get(){
@@ -39,9 +47,7 @@ $obj = new program();
 	}
 	
 	class login extends page{
-		public function get(){
-			echo $this->form;
-		}
+
 		public $form =
 		 				'<FORM action="forms.php?class=login" method="post">
     		   				<P>
@@ -52,18 +58,22 @@ $obj = new program();
     		 					<INPUT type="submit" value="Send"> <INPUT type="reset">
     		 				</P>
 		 	 			</FORM>';
+		public function get(){
+			echo $this->form;
+		}
+		
 		public function post(){
-			echo 'Thank you for logging in, ' . "$_POST[username]" . "." . ' Have a wonderful day!<br><br><br>';
-			echo '<a href="forms.php">Click here to retun to the Homepage</a>';
+			$obj = new validation();
+			//echo 'Thank you for logging in, ' . "$_POST[username]" . "." . ' Have a wonderful day!<br><br><br>';
+			//echo '<a href="forms.php">Click here to retun to the Homepage</a>';
 		}
 	}
 	
 	class signup extends page{
-		public function get(){
-			echo $this->form;
-		}
-
-		public $form = '<FORM action="forms.php?class=signup" method="post">
+	
+		
+		public 	$form = 
+					 '<FORM action="forms.php?class=signup" method="post">
 						<P>
 							<LABEL for="firstname">First name: </LABEL>
 								<INPUT type="text" name="firstname" id="firstname" required="required"><BR>
@@ -73,30 +83,79 @@ $obj = new program();
 								<INPUT type="text" name="username" id="username" required="required"><BR>
 							<LABEL for="password">Choose a password: </LABEL>
 								<INPUT type="password" name="password" id="password" required="required"><BR>
-							<LABEL for="passwordconfirmation">Confirm your password: </LABEL>
+							<LABEL for="passwordconfirmation">Confirm your password: </LABEL> 
 								<INPUT type="password" name="passwordconfirmation" id="passwordconfirmation" required="required"><BR>
 							<INPUT type="submit" value="Send"> <INPUT type="reset">
 						</P>
 						</FORM>';
-		
-		public function post(){
-			if($_POST['password'] == $_POST['passwordconfirmation']){
-				$userinfo = array();
-				$userinfo[]=$_POST['firstname'];
-				$userinfo[]=$_POST['lastname'];
-				$userinfo[]=$_POST['username'];
-				$userinfo[]=$_POST['password'];
-			$handle = fopen('users.csv', 'a+');
-			fputcsv($handle, $userinfo);
-			echo "Welcome, " . $_POST['firstname'] . " " . $_POST['lastname'] . "!";
-			}else{
-				//header('Location: ./forms.php?class=signup');
-				echo 'Sorry, your passwords don\'t match!' . $this->form;
-			}
+		public function get(){
+			echo $this->form;
+		}
 			
-		
+
+		public function post(){
+			$handle = fopen('users.csv', 'r+');
+			$record = fgetcsv($handle, 0, ',');
+			if($record[0]!=="First Name" && $record[1]!=="Last Name" && $record[2]!=="Username" && $record[3]!= "Password"){
+				fputcsv($handle, array('First Name', 'Last Name', 'Username', 'Password'));
+				print_r($record);
+				fclose($handle);
+			}
+			if($_POST['password'] !== $_POST['passwordconfirmation']){
+				throw new Exception('Passwords don\'t match');
+			}
+							$userinfo = array();
+							$userinfo[]=$_POST['firstname'];
+							$userinfo[]=$_POST['lastname'];
+							$userinfo[]=$_POST['username'];
+							$userinfo[]=$_POST['password'];
+						$handle = fopen('users.csv', 'a+');
+						fputcsv($handle, $userinfo);
+						echo "Welcome, " . $_POST['firstname'] . " " . $_POST['lastname'] . "!";
+						fclose($handle);
+						
 		}
 	}
+	
+	
+class validation{
+	public function __construct(){
+		$row=1;
+		if(($handle = fopen('users.csv', 'r'))!==FALSE){
+			while(($record = fgetcsv($handle, 0, ','))!==FALSE){
+				if($row==1){
+					$keys=$record;
+					$row++;
+				}else{
+					$records[] = array_combine($keys, $record);
+				}
+			}
+			function makePrimaryKey($key_name, $records){
+				foreach($records as $record){
+					$index_name = $record[$key_name];
+					unset($record[$key_name]);
+					$new_records[$index_name] = $record;
+				}
+				return($new_records);
+			}
+			$sorted_records = makePrimaryKey('Username', $records);
+		}
+	$username_posted = $_POST['username'];
+	$password_posted = $_POST['password'];
+	if(array_key_exists($username_posted, $sorted_records) && $password_posted == $sorted_records[$username_posted]['Password']){
+		echo 'Welcome, ' . $_POST['username'];
+		
+	}else{
+		echo 'You were not found in our records';
+	}	
+	}
+}
+	
+	
+		
+		
+		
+	
 
 
 
