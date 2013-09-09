@@ -2,6 +2,7 @@
 $obj = new program();
 	class program{
 		public function __construct(){
+			session_start();
 			if(isset($_REQUEST['class'])){
 				$class = $_REQUEST['class'];
 				$obj = new $class();
@@ -52,19 +53,20 @@ $obj = new program();
 
 		public $form =
 		 				'<FORM action="forms.php?class=login" method="post">
-    		   				<P>
+    		   				<fieldset>
     		 					<LABEL for="username">Username: </LABEL>
              						<INPUT type="text" name="username" id="username" required="required"><BR>
 			 					<LABEL for="password">Password: </LABEL>
 			 						<INPUT type="password" name="password" id="password" required="required"><BR>
     		 					<INPUT type="submit" value="Send"> <INPUT type="reset">
-    		 				</P>
+    		 				</fieldset>
 		 	 			</FORM>';
 		public function get(){
 			echo $this->form;
 		}
 		
 		public function post(){
+			$_SESSION['username'] = $_POST['username'];
 			$obj = new validation();
 		}
 	}
@@ -74,7 +76,7 @@ $obj = new program();
 		
 		public 	$form = 
 					 '<FORM action="forms.php?class=signup" method="post">
-						<P>
+						<fieldset>
 							<LABEL for="firstname">First name: </LABEL>
 								<INPUT type="text" name="firstname" id="firstname" required="required"><BR>
 							<LABEL for="lastname">Last name: </LABEL>
@@ -86,7 +88,7 @@ $obj = new program();
 							<LABEL for="passwordconfirmation">Confirm your password: </LABEL> 
 								<INPUT type="password" name="passwordconfirmation" id="passwordconfirmation" required="required"><BR>
 							<INPUT type="submit" value="Send"> <INPUT type="reset">
-						</P>
+						</fieldset>
 						</FORM>';
 		public function get(){
 			echo $this->form;
@@ -137,7 +139,9 @@ $obj = new program();
 				$userinfo[]=$accountNum;
 				$handle = fopen('users.csv', 'a+');
 				fputcsv($handle, $userinfo);
-				echo "Welcome, " . $_POST['firstname'] . " " . $_POST['lastname'] . "! " . "Your account number is " . $accountNum . ".<br>" . page::$menu;
+				echo "Welcome, " . $_POST['firstname'] . " " . $_POST['lastname'] . "! " . "Your account number is " . $accountNum . ".<br>"; 
+				echo '<br><br> <a href="forms.php?class=transaction">Enter Transactions</a>';
+				echo '<br><br> <a href="forms.php?class=signout">Signout</a>';
 				fclose($handle);
 			} 
 						    
@@ -172,7 +176,9 @@ class validation{
 	$username_posted = $_POST['username'];
 	$password_posted = $_POST['password'];
 	if(array_key_exists($username_posted, $sorted_records) && $password_posted == $sorted_records[$username_posted]['Password']){
-		echo 'Welcome, ' . $sorted_records[$username_posted]['First Name'] . '!<br><br>' . page::$menu;
+		echo 'Welcome, ' . $sorted_records[$username_posted]['First Name'] . '!' . '<br><br><a href="forms.php?class=transaction">Enter transactions</a>';
+		echo '<br><br> <a href="forms.php?class=signout">Signout</a>';
+		
 		}elseif(!array_key_exists($username_posted, $sorted_records)){
 			echo 'We could not find you in our records. Sign up ' . '<a href="forms.php?class=signup">here.</a>';
 		}elseif($password_posted !== $sorted_records[$username_posted]['Password']){
@@ -180,7 +186,103 @@ class validation{
 		}	
 	}
 }
-	
+
+class transaction {
+	public  $form = '<br>
+              <FORM action="forms.php?class=transaction" method="post">
+                <fieldset>
+                  <LABEL for="amount">Amount: </LABEL>
+                    <INPUT type="text" name="amount" id="amount"><BR>
+                  <LABEL for="source">Source: </LABEL>
+                    <INPUT type="text" name="source" id="source"><BR>
+                    <INPUT type="radio" name="type" value="debit"> Debit<BR>
+                    <INPUT type="radio" name="type" value="credit"> Credit<BR>
+                    <INPUT type="submit" value="Send"> <INPUT type="reset">
+                </fieldset>
+              </FORM>';
+	public function __construct(){
+		if($_SERVER['REQUEST_METHOD']=='GET'){
+			$this->get();
+		}else{
+			$this->post();
+		}
+	}
+	public function get(){
+		echo $this->form;
+		echo '<br><br> <a href="forms.php?class=signout">Signout</a>';
+	}
+	public function post(){
+		if($_POST['type']=='debit'){
+			echo  $this->form . '<br><br>You have spent $' . $_POST['amount'] . ' at ' . $_POST['source'] . ".<br><br>";
+		}else{
+			echo  $this->form . '<br><br>You have credited $' . $_POST['amount'] . ' to your account from ' . $_POST['source'] . '.<br><br>';
+		}
+		$obj = new calculation();
+		echo '<br><br> <a href="forms.php?class=signout">Signout</a>';
+	}
+
+}
+
+class calculation{
+	public $old_bal;
+	public $new_bal;
+	public function __construct($old_bal = null, $new_bal = null){
+		$this->set_old_balance();
+		if($_POST['type'] == 'credit'){
+			$this->credit();
+		}elseif($_POST['type'] == 'debit'){
+			$this->debit();
+		}
+		$this->message();
+		$old_bal = $this->old_bal;
+		$new_bal = $this->new_bal;
+		$handle = fopen($_SESSION['username'] . '.csv', 'a+');
+		$data = array();
+		$data['amount'] = $_POST['amount'];
+		$data['source'] = $_POST['source'];
+		$data['type'] = $_POST['type'];
+		$data['balance'] = $new_bal;
+		$data['time'] = date('m-d-Y \a\t g:i:s a');
+		fputcsv($handle, $data);
+		$transaction = fgetcsv($handle, 0, ',');
+		//print_r($transaction);
+		fclose($handle);
+		//print_r($data);
+			
+	}
+	public function credit(){
+		$this->new_bal = $this->old_bal + $_POST['amount'];
+	}
+	public function debit(){
+		$this->new_bal = $this->old_bal - $_POST['amount'];
+	}
+	public function message(){
+		echo 'Your previous balance was $' . $this->old_bal . '. Your new balance is $' . $this->new_bal . '.';
+	}
+	public function set_old_balance(){
+		if(($handle = fopen($_SESSION['username'] . '.csv', 'a+'))!==FALSE){
+			while(($record = fgetcsv($handle, 0, ','))!==FALSE){
+				$data[] = $record;
+			}
+			fclose($handle);
+		}
+		if(isset($data)){
+			$array_length = count($data);
+			$this->old_bal = $data[$array_length - 1][3];
+			//print_r($data);
+		}else{
+			$this->old_bal = 0;
+		}
+	}
+
+}
+	class signout{
+		public function __construct(){
+			session_destroy();
+			header('Location: forms.php');
+			
+		}
+	}
 	
 		
 		
