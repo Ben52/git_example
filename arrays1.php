@@ -20,6 +20,6 @@
 print_r($info);
 print_r($info1);
  
-echo $info1[2][ 'last_name', 'first_name'];
+//echo $info1[1][ 'last_name', 'first_name'];
 
  ?>
